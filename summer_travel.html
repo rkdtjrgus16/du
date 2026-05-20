@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>여름 관광지 추천 🌊</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ocean: #006994;
+      --sky: #00bfff;
+      --sand: #f5deb3;
+      --coral: #ff6b6b;
+      --sun: #ffd700;
+      --teal: #20b2aa;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(180deg, #87ceeb 0%, #00bfff 40%, #006994 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ──── 네비게이션 ──── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2.5rem;
+      background: rgba(0,105,148,0.6);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo span { color: var(--sun); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--sun); }
+
+    /* ──── 히어로 ──── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* 태양 */
+    .sun {
+      position: absolute;
+      top: 80px; right: 12%;
+      width: 110px; height: 110px;
+      background: radial-gradient(circle, #fff700, #ffd700, #ffaa00);
+      border-radius: 50%;
+      box-shadow: 0 0 40px 20px rgba(255,215,0,0.5), 0 0 80px 40px rgba(255,215,0,0.2);
+      animation: sunPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes sunPulse {
+      0%,100% { box-shadow: 0 0 40px 20px rgba(255,215,0,0.5), 0 0 80px 40px rgba(255,215,0,0.2); }
+      50%      { box-shadow: 0 0 60px 30px rgba(255,215,0,0.7), 0 0 120px 60px rgba(255,215,0,0.3); }
+    }
+
+    /* 태양 광선 */
+    .sun-rays {
+      position: absolute;
+      top: 80px; right: 12%;
+      width: 110px; height: 110px;
+      animation: rotateSun 20s linear infinite;
+    }
+
+    .sun-rays::before, .sun-rays::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 200px; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent);
+      transform-origin: 0 50%;
+      border-radius: 2px;
+    }
+
+    .sun-rays::after { transform: rotate(90deg); }
+
+    @keyframes rotateSun { to { transform: rotate(360deg); } }
+
+    /* 구름 */
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50px;
+      animation: floatCloud linear infinite;
+    }
+
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+    }
+
+    .cloud1 { width: 120px; height: 40px; top: 140px; left: -150px; animation-duration: 25s; }
+    .cloud1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
+    .cloud1::after  { width: 45px; height: 45px; top: -20px; left: 55px; }
+
+    .cloud2 { width: 90px; height: 30px; top: 200px; left: -120px; animation-duration: 35s; animation-delay: -10s; opacity: 0.7; }
+    .cloud2::before { width: 45px; height: 45px; top: -22px; left: 10px; }
+    .cloud2::after  { width: 35px; height: 35px; top: -16px; left: 40px; }
+
+    .cloud3 { width: 150px; height: 45px; top: 100px; left: -200px; animation-duration: 30s; animation-delay: -5s; opacity: 0.6; }
+    .cloud3::before { width: 70px; height: 70px; top: -35px; left: 20px; }
+    .cloud3::after  { width: 55px; height: 55px; top: -25px; left: 70px; }
+
+    @keyframes floatCloud {
+      from { transform: translateX(0); }
+      to   { transform: translateX(calc(100vw + 250px)); }
+    }
+
+    /* 갈매기 */
+    .seagulls { position: absolute; top: 180px; left: 10%; }
+    .gull {
+      display: inline-block;
+      width: 30px; height: 8px;
+      border-top: 3px solid rgba(255,255,255,0.8);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      position: relative;
+      margin: 0 8px;
+      animation: flap 1.2s ease-in-out infinite;
+    }
+
+    .gull:nth-child(2) { animation-delay: 0.2s; transform: scale(0.8); }
+    .gull:nth-child(3) { animation-delay: 0.4s; transform: scale(0.65); }
+
+    @keyframes flap {
+      0%,100% { border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+      50%      { border-radius: 0 0 50% 50% / 0 0 100% 100%; }
+    }
+
+    /* 히어로 텍스트 */
+    .hero-badge {
+      display: inline-block;
+      padding: 0.4rem 1.2rem;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 50px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      text-shadow: 0 4px 20px rgba(0,60,100,0.5);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 .highlight {
+      color: var(--sun);
+      display: block;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.9);
+      max-width: 500px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    .btn-primary {
+      padding: 0.9rem 2.2rem;
+      background: linear-gradient(135deg, #ff6b6b, #ff4757);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(255,71,87,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(255,71,87,0.5);
+    }
+
+    .btn-secondary {
+      padding: 0.9rem 2.2rem;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+      transition: background 0.3s, transform 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-3px);
+    }
+
+    /* 파도 */
+    .waves-container {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 160px;
+      overflow: hidden;
+    }
+
+    .wave {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+    }
+
+    .wave svg { width: 100%; height: 100%; }
+
+    .wave1 { animation: wave 8s linear infinite; opacity: 0.9; }
+    .wave2 { animation: wave 11s linear infinite reverse; opacity: 0.6; bottom: 10px; }
+    .wave3 { animation: wave 14s linear infinite; opacity: 0.4; bottom: 20px; }
+
+    @keyframes wave {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* 거품 파티클 */
+    .bubbles { position: fixed; bottom: 0; left: 0; right: 0; pointer-events: none; z-index: 1; }
+    .bubble {
+      position: absolute;
+      bottom: -60px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      animation: rise linear infinite;
+    }
+
+    @keyframes rise {
+      0%   { bottom: -60px; opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.5; }
+      100% { bottom: 110vh; opacity: 0; }
+    }
+
+    /* ──── 통계 배너 ──── */
+    .stats-banner {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; color: #fff; }
+    .stat-num  { font-size: 2.5rem; font-weight: 900; color: var(--sun); display: block; }
+    .stat-label { font-size: 0.9rem; opacity: 0.85; }
+
+    /* ──── 섹션 공통 ──── */
+    section { padding: 5rem 2rem; }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title .tag {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      background: rgba(255,215,0,0.2);
+      color: var(--sun);
+      border: 1px solid rgba(255,215,0,0.4);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    /* ──── 국내 여행지 카드 ──── */
+    .domestic-section { background: transparent; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .dest-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 24px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .dest-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+    /* 국내 카드 사진 */
+    .card-photo-wrap {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    .card-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .dest-card:hover .card-photo { transform: scale(1.08); }
+
+    .card-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,30,70,0.45));
+    }
+
+    .card-body { padding: 1.4rem; }
+
+    .card-tag {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      background: rgba(255,215,0,0.25);
+      color: var(--sun);
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 0.6rem;
+    }
+
+    .card-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-rating {
+      color: var(--sun);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .card-temp {
+      background: rgba(255,107,107,0.25);
+      color: #ff9999;
+      padding: 0.25rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* ──── 해외 여행지 ──── */
+    .intl-section { background: rgba(0,0,0,0.1); }
+
+    .intl-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .intl-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 0;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intl-card:hover { transform: translateY(-8px); box-shadow: 0 18px 45px rgba(0,0,0,0.3); }
+
+    /* 해외 카드 사진 */
+    .intl-photo-wrap {
+      position: relative;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .intl-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .intl-card:hover .intl-photo { transform: scale(1.08); }
+
+    .intl-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, rgba(0,20,50,0.55));
+    }
+
+    .intl-flag-badge {
+      position: absolute;
+      top: 0.7rem; right: 0.7rem;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      border-radius: 8px;
+      padding: 0.2rem 0.5rem;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .intl-body { padding: 1.2rem 1.2rem 1.4rem; }
+
+    .intl-icon { font-size: 2.4rem; margin-bottom: 0.5rem; display: block; }
+    .intl-name { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+    .intl-country { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-bottom: 0.7rem; }
+    .intl-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+    .intl-tag {
+      padding: 0.2rem 0.6rem;
+      background: rgba(32,178,170,0.25);
+      color: #7fffd4;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    /* ──── 계절 여행 팁 ──── */
+    .tips-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .tip-card {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 1.8rem 1.4rem;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .tip-card:hover { transform: translateY(-6px); }
+
+    .tip-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .tip-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+    .tip-text  { font-size: 0.83rem; color: rgba(255,255,255,0.75); line-height: 1.7; }
+
+    /* ──── 인기 활동 ──── */
+    .activities-section {
+      padding: 5rem 2rem;
+      background: rgba(0,0,0,0.08);
+    }
+
+    .activities-list {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 900px;
+      margin: 2rem auto 0;
+    }
+
+    .activity-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .activity-chip:hover {
+      background: rgba(255,215,0,0.25);
+      border-color: rgba(255,215,0,0.5);
+      color: var(--sun);
+      transform: scale(1.05);
+    }
+
+    /* ──── CTA ──── */
+    .cta-section {
+      text-align: center;
+      padding: 6rem 2rem;
+      background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,215,0,0.15));
+    }
+
+    .cta-section h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .cta-section p {
+      color: rgba(255,255,255,0.85);
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ──── 푸터 ──── */
+    footer {
+      background: rgba(0,0,0,0.3);
+      padding: 2rem;
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    footer span { color: var(--sun); }
+
+    /* ──── 스크롤 애니메이션 ──── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ──── 스크롤 상단 버튼 ──── */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      width: 50px; height: 50px;
+      background: linear-gradient(135deg, var(--coral), #ff4757);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255,71,87,0.4);
+      transition: transform 0.2s, opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    .scroll-top.show { opacity: 1; pointer-events: auto; }
+    .scroll-top:hover { transform: scale(1.1) translateY(-3px); }
+
+    /* ──── 검색 바 ──── */
+    .search-bar {
+      position: relative;
+      max-width: 460px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 1rem 1.5rem 1rem 3rem;
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      backdrop-filter: blur(8px);
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .search-bar input::placeholder { color: rgba(255,255,255,0.6); }
+    .search-bar input:focus {
+      border-color: rgba(255,215,0,0.6);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    /* ──── 반응형 ──── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .stats-banner { gap: 2rem; }
+      .hero h1 { font-size: 2.5rem; }
+    }
+
+    /* ──── 여행지 소개 모달 ──── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 20, 50, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: linear-gradient(160deg, rgba(0,60,110,0.95), rgba(0,30,70,0.97));
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 28px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: translateY(30px) scale(0.97);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      scrollbar-width: none;
+    }
+
+    .modal-card::-webkit-scrollbar { display: none; }
+
+    .modal-overlay.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-hero-img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      display: block;
+      border-radius: 28px 28px 0 0;
+    }
+
+    .modal-hero-gradient {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 230px;
+      border-radius: 28px 28px 0 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,20,60,0.65) 100%);
+      pointer-events: none;
+    }
+
+    .modal-hero-title {
+      position: absolute;
+      top: 150px;
+      left: 1.6rem;
+      right: 4rem;
+    }
+
+    .modal-hero-title .dest-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--sun);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .modal-hero-title h2 {
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      line-height: 1.15;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      width: 38px; height: 38px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 10;
+    }
+
+    .modal-close:hover { background: rgba(255,71,87,0.7); transform: rotate(90deg); }
+
+    .modal-body { padding: 1.5rem 1.6rem 2rem; }
+
+    .modal-stats {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+    }
+
+    .modal-stat {
+      flex: 1;
+      min-width: 100px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+    }
+
+    .modal-stat-icon { font-size: 1.3rem; display: block; margin-bottom: 0.2rem; }
+    .modal-stat-value { font-size: 0.9rem; font-weight: 700; color: #fff; display: block; }
+    .modal-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); }
+
+    .modal-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--sun);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .modal-intro {
+      font-size: 0.93rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.85;
+      margin-bottom: 1.4rem;
+    }
+
+    .modal-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-highlight-chip {
+      padding: 0.3rem 0.85rem;
+      background: rgba(0,191,255,0.15);
+      border: 1px solid rgba(0,191,255,0.3);
+      border-radius: 50px;
+      color: #7fdfff;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .modal-tips {
+      background: rgba(255,215,0,0.08);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+    }
+
+    .modal-tips p {
+      font-size: 0.87rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.75;
+    }
+
+    .modal-tips p strong { color: var(--sun); }
+
+    @media (max-width: 600px) {
+      .modal-hero-img { height: 180px; }
+      .modal-hero-gradient { height: 180px; }
+      .modal-hero-title { top: 108px; }
+      .modal-hero-title h2 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 네비게이션 -->
+  <nav>
+    <div class="nav-logo">SUM<span>MER</span> 트래블</div>
+    <ul class="nav-links">
+      <li><a href="#domestic">국내 여행</a></li>
+      <li><a href="#international">해외 여행</a></li>
+      <li><a href="#activities">여름 활동</a></li>
+      <li><a href="#tips">여행 팁</a></li>
+    </ul>
+  </nav>
+
+  <!-- 히어로 섹션 -->
+  <section class="hero" id="home">
+    <div class="sun"></div>
+    <div class="sun-rays"></div>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="seagulls">
+      <div class="gull"></div>
+      <div class="gull"></div>
+      <div class="gull"></div>
+    </div>
+
+    <div class="hero-badge">🌊 2025 여름 여행 가이드</div>
+    <h1>
+      이번 여름,<br>
+      <span class="highlight">어디로 떠날까요?</span>
+    </h1>
+    <p>파란 바다, 쏟아지는 햇살, 시원한 파도소리.<br>올여름 당신만의 완벽한 여행지를 찾아보세요.</p>
+
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="여행지, 도시, 나라를 검색해보세요..." id="searchInput">
+    </div>
+
+    <div class="hero-buttons">
+      <a href="#domestic" class="btn-primary">국내 여행지 보기 🏝️</a>
+      <a href="#international" class="btn-secondary">해외 여행지 보기 ✈️</a>
+    </div>
+
+    <div class="waves-container">
+      <div class="wave wave1">
+        <svg viewBox="0 0 800 80" preserveAspectRatio="none">
+          <path d="M0,40 Q100,0 200,40 Q300,80 400,40 Q500,0 600,40 Q700,80 800,40 L800,80 L0,80 Z"
+                fill="rgba(0,105,148,0.5)"/>
+        </svg>
+      </div>
+      <div class="wave wave2">
+        <svg viewBox="0 0 800 80" preserveAspectRatio="none">
+          <path d="M0,45 Q100,5 200,45 Q300,85 400,45 Q500,5 600,45 Q700,85 800,45 L800,80 L0,80 Z"
+                fill="rgba(0,80,120,0.5)"/>
+        </svg>
+      </div>
+      <div class="wave wave3">
+        <svg viewBox="0 0 800 80" preserveAspectRatio="none">
+          <path d="M0,50 Q100,10 200,50 Q300,90 400,50 Q500,10 600,50 Q700,90 800,50 L800,80 L0,80 Z"
+                fill="rgba(0,50,90,0.6)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 통계 배너 -->
+  <div class="stats-banner">
+    <div class="stat-item fade-up">
+      <span class="stat-num" data-count="48">0</span>
+      <span class="stat-label">추천 여행지</span>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:0.1s">
+      <span class="stat-num" data-count="12">0</span>
+      <span class="stat-label">해외 국가</span>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:0.2s">
+      <span class="stat-num" data-count="3200">0</span>
+      <span class="stat-label">여행자 후기</span>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:0.3s">
+      <span class="stat-num" data-count="98">0</span>
+      <span class="stat-label">만족도 (%)</span>
+    </div>
+  </div>
+
+  <!-- 국내 여행지 -->
+  <section class="domestic-section" id="domestic">
+    <div class="section-title fade-up">
+      <div class="tag">🇰🇷 KOREA</div>
+      <h2>국내 인기 여름 여행지</h2>
+    </div>
+    <div class="cards-grid" id="domesticGrid">
+
+      <div class="dest-card fade-up" data-name="제주도 성산일출봉" data-dest="jeju">
+        <div class="card-photo-wrap">
+          <img class="card-photo" loading="lazy" alt="제주도"
+            src="https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=700&h=440&fit=crop&q=80">
+          <div class="card-photo-overlay"></div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">🏝️ 섬 여행</span>
+          <h3 class="card-name">제주도</h3>
+          <p class="card-desc">에메랄드빛 바다, 용암 지형, 신선한 해산물까지. 국내 최고의 여름 휴양지.</p>
+          <div class="card-meta">
+            <span class="card-rating">⭐ 4.9 (2.4k)</span>
+            <span class="card-temp">🌡️ 28°C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dest-card fade-up" data-name="부산 해운대" data-dest="busan">
+        <div class="card-photo-wrap">
+          <img class="card-photo" loading="lazy" alt="부산 해운대"
+            src="https://images.unsplash.com/photo-1598824783691-bb84d0960af9?w=700&h=440&fit=crop&q=80">
+          <div class="card-photo-overlay"></div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">🌊 해변</span>
+          <h3 class="card-name">부산 해운대</h3>
+          <p class="card-desc">국내 최대 해수욕장. 생동감 넘치는 야경과 풍부한 먹거리가 매력적인 곳.</p>
+          <div class="card-meta">
+            <span class="card-rating">⭐ 4.8 (3.1k)</span>
+            <span class="card-temp">🌡️ 30°C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dest-card fade-up" data-name="강릉 경포대" data-dest="gangneung">
+        <div class="card-photo-wrap">
+          <img class="card-photo" loading="lazy" alt="강릉 경포대"
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&h=440&fit=crop&q=80">
+          <div class="card-photo-overlay"></div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">☀️ 일출명소</span>
+          <h3 class="card-name">강릉 경포대</h3>
+          <p class="card-desc">넓은 백사장과 맑은 바다. 안목해변 카페거리에서 커피 한 잔의 여유를 즐겨요.</p>
+          <div class="card-meta">
+            <span class="card-rating">⭐ 4.7 (1.8k)</span>
+            <span class="card-temp">🌡️ 27°C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dest-card fade-up" data-name="여수 돌산도" data-dest="yeosu">
+        <div class="card-photo-wrap">
+          <img class="card-photo" loading="lazy" alt="여수"
+            src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=700&h=440&fit=crop&q=80">
+          <div class="card-photo-overlay"></div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">🎆 야경명소</span>
+          <h3 class="card-name">여수</h3>
+          <p class="card-desc">낭만적인 여수 밤바다와 돌산대교. 갓김치와 게장의 본고장, 미식 여행의 성지.</p>
+          <div class="card-meta">
+            <span class="card-rating">⭐ 4.8 (2.0k)</span>
+            <span class="card-temp">🌡️ 29°C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dest-card fade-up" data-name="통영 한려수도" data-dest="tongyeong">
+        <div class="card-photo-wrap">
+          <img class="card-photo" loading="lazy" alt="통영"
+            src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=700&h=440&fit=crop&q=80">
+          <div class="card-photo-overlay"></div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">🐚 다도해</span>
+          <h3 class="card-name">통영</h3>
+          <p class="card-desc">동양의 나폴리라 불리는 한려수도. 케이블카와 루지, 그리고 통영 굴까지!</p>
+          <div class="card-meta">
+            <span class="card-rating">⭐ 4.7 (1.5k)</span>
+            <span class="card-temp">🌡️ 28°C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dest-card fade-up" data-name="속초 청초호" data-dest="sokcho">
+        <div class="card-photo-wrap">
+          <img class="card-photo" loading="lazy" alt="속초"
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=700&h=440&fit=crop&q=80">
+          <div class="card-photo-overlay"></div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">🌿 산+바다</span>
+          <h3 class="card-name">속초</h3>
+          <p class="card-desc">설악산의 웅장함과 동해의 시원함을 동시에! 아바이마을 오징어순대도 놓치지 마세요.</p>
+          <div class="card-meta">
+            <span class="card-rating">⭐ 4.6 (1.2k)</span>
+            <span class="card-temp">🌡️ 25°C</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 해외 여행지 -->
+  <section class="intl-section" id="international">
+    <div class="section-title fade-up">
+      <div class="tag">✈️ WORLD</div>
+      <h2>해외 여름 버킷리스트</h2>
+    </div>
+    <div class="intl-grid">
+
+      <div class="intl-card fade-up" data-dest="bali">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="발리"
+            src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇮🇩</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🌴</span>
+          <div class="intl-name">발리</div>
+          <div class="intl-country">인도네시아</div>
+          <div class="intl-tags">
+            <span class="intl-tag">서핑</span>
+            <span class="intl-tag">힌두 사원</span>
+            <span class="intl-tag">라이스 테라스</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.1s" data-dest="hawaii">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="하와이"
+            src="https://images.unsplash.com/photo-1483168527879-c66136b56105?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇺🇸</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🌺</span>
+          <div class="intl-name">하와이</div>
+          <div class="intl-country">미국</div>
+          <div class="intl-tags">
+            <span class="intl-tag">와이키키</span>
+            <span class="intl-tag">화산 국립공원</span>
+            <span class="intl-tag">스노클링</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.2s" data-dest="maldives">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="몰디브"
+            src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇲🇻</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🐠</span>
+          <div class="intl-name">몰디브</div>
+          <div class="intl-country">몰디브</div>
+          <div class="intl-tags">
+            <span class="intl-tag">수상 빌라</span>
+            <span class="intl-tag">산호초</span>
+            <span class="intl-tag">다이빙</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.3s" data-dest="santorini">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="그리스 산토리니"
+            src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇬🇷</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🏛️</span>
+          <div class="intl-name">그리스 산토리니</div>
+          <div class="intl-country">그리스</div>
+          <div class="intl-tags">
+            <span class="intl-tag">절벽 일몰</span>
+            <span class="intl-tag">흰 건물</span>
+            <span class="intl-tag">지중해</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.4s" data-dest="danang">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="다낭"
+            src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇻🇳</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🐉</span>
+          <div class="intl-name">다낭</div>
+          <div class="intl-country">베트남</div>
+          <div class="intl-tags">
+            <span class="intl-tag">미케 해변</span>
+            <span class="intl-tag">바나힐</span>
+            <span class="intl-tag">호이안</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.5s" data-dest="okinawa">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="오키나와"
+            src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇯🇵</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🗼</span>
+          <div class="intl-name">도쿄 / 오키나와</div>
+          <div class="intl-country">일본</div>
+          <div class="intl-tags">
+            <span class="intl-tag">축제</span>
+            <span class="intl-tag">투명 바다</span>
+            <span class="intl-tag">류큐 문화</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.6s" data-dest="cebu">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="세부"
+            src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇵🇭</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🏄</span>
+          <div class="intl-name">세부</div>
+          <div class="intl-country">필리핀</div>
+          <div class="intl-tags">
+            <span class="intl-tag">고래상어</span>
+            <span class="intl-tag">초코산</span>
+            <span class="intl-tag">리조트</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intl-card fade-up" style="transition-delay:0.7s" data-dest="samui">
+        <div class="intl-photo-wrap">
+          <img class="intl-photo" loading="lazy" alt="코사무이"
+            src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&h=360&fit=crop&q=80">
+          <div class="intl-photo-overlay"></div>
+          <span class="intl-flag-badge">🇹🇭</span>
+        </div>
+        <div class="intl-body">
+          <span class="intl-icon">🌊</span>
+          <div class="intl-name">코사무이</div>
+          <div class="intl-country">태국</div>
+          <div class="intl-tags">
+            <span class="intl-tag">풀빌라</span>
+            <span class="intl-tag">마사지</span>
+            <span class="intl-tag">야시장</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 여름 활동 -->
+  <section class="activities-section" id="activities">
+    <div class="section-title fade-up">
+      <div class="tag">🎯 ACTIVITIES</div>
+      <h2>이번 여름 꼭 해봐야 할 것들</h2>
+    </div>
+    <div class="activities-list">
+      <div class="activity-chip">🏄 서핑</div>
+      <div class="activity-chip">🤿 스노클링</div>
+      <div class="activity-chip">⛵ 요트</div>
+      <div class="activity-chip">🎣 낚시</div>
+      <div class="activity-chip">🏕️ 캠핑</div>
+      <div class="activity-chip">🌅 일출 감상</div>
+      <div class="activity-chip">🚴 자전거 투어</div>
+      <div class="activity-chip">🍦 로컬 음식 탐방</div>
+      <div class="activity-chip">🛶 카약</div>
+      <div class="activity-chip">📸 포토 스팟</div>
+      <div class="activity-chip">🧘 해변 요가</div>
+      <div class="activity-chip">🎆 불꽃축제</div>
+    </div>
+  </section>
+
+  <!-- 여행 팁 -->
+  <section id="tips">
+    <div class="tips-section">
+      <div class="section-title fade-up">
+        <div class="tag">💡 TIPS</div>
+        <h2>여름 여행 꿀팁</h2>
+      </div>
+      <div class="tips-grid">
+        <div class="tip-card fade-up">
+          <span class="tip-icon">🕶️</span>
+          <div class="tip-title">자외선 차단 필수</div>
+          <p class="tip-text">SPF 50+ 선크림을 2시간마다 재도포하고, 자외선 차단 옷·모자를 착용하세요.</p>
+        </div>
+        <div class="tip-card fade-up" style="transition-delay:0.1s">
+          <span class="tip-icon">💧</span>
+          <div class="tip-title">수분 보충</div>
+          <p class="tip-text">더운 날씨에는 시간당 500ml 이상 물을 마셔 탈수를 예방하세요.</p>
+        </div>
+        <div class="tip-card fade-up" style="transition-delay:0.2s">
+          <span class="tip-icon">🎒</span>
+          <div class="tip-title">조기 예약</div>
+          <p class="tip-text">성수기 숙소·항공은 2~3개월 전 예약이 기본! 얼리버드 할인을 노려보세요.</p>
+        </div>
+        <div class="tip-card fade-up" style="transition-delay:0.3s">
+          <span class="tip-icon">⛅</span>
+          <div class="tip-title">날씨 체크</div>
+          <p class="tip-text">7~8월은 장마·태풍 시즌. 여행 전날 기상 예보를 꼭 확인하세요.</p>
+        </div>
+        <div class="tip-card fade-up" style="transition-delay:0.4s">
+          <span class="tip-icon">🏥</span>
+          <div class="tip-title">여행자 보험</div>
+          <p class="tip-text">특히 해외 여행 시 여행자 보험 가입 필수. 의료비 걱정 없이 즐기세요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="fade-up">
+      <h2>🌊 지금 바로 떠날 준비가 됐나요?</h2>
+      <p>올여름, 잊지 못할 추억을 만들어보세요!</p>
+      <div class="hero-buttons">
+        <a href="#domestic" class="btn-primary">여행지 탐색하기 🗺️</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 푸터 -->
+  <footer>
+    <p>© 2025 <span>SUMMER 트래블</span> — 당신의 완벽한 여름 여행을 응원합니다 ☀️</p>
+  </footer>
+
+  <!-- 스크롤 상단 버튼 -->
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">▲</button>
+
+  <!-- 거품 파티클 컨테이너 -->
+  <div class="bubbles" id="bubbles"></div>
+
+  <!-- 여행지 소개 모달 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" id="modalClose">✕</button>
+      <img class="modal-hero-img" id="modalImg" src="" alt="">
+      <div class="modal-hero-gradient"></div>
+      <div class="modal-hero-title">
+        <span class="dest-label" id="modalLabel"></span>
+        <h2 id="modalTitle"></h2>
+      </div>
+      <div class="modal-body">
+        <div class="modal-stats" id="modalStats"></div>
+        <div class="modal-section-title">소개</div>
+        <p class="modal-intro" id="modalIntro"></p>
+        <div class="modal-section-title">놓치면 안 될 명소</div>
+        <div class="modal-highlights" id="modalHighlights"></div>
+        <div class="modal-tips" id="modalTips"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── 거품 생성 ──
+    const bubblesEl = document.getElementById('bubbles');
+    for (let i = 0; i < 18; i++) {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      const size = Math.random() * 18 + 8;
+      b.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        animation-duration:${Math.random()*8+6}s;
+        animation-delay:${Math.random()*10}s;
+      `;
+      bubblesEl.appendChild(b);
+    }
+
+    // ── 스크롤 관찰 (fade-up) ──
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── 숫자 카운트업 ──
+    function countUp(el, target, duration = 1800) {
+      let start = 0;
+      const step = target / (duration / 16);
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= target) { el.textContent = target.toLocaleString(); clearInterval(timer); return; }
+        el.textContent = Math.floor(start).toLocaleString();
+      }, 16);
+    }
+
+    const statObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const nums = e.target.querySelectorAll('[data-count]');
+          nums.forEach(n => countUp(n, parseInt(n.dataset.count)));
+          statObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelector('.stats-banner') && statObs.observe(document.querySelector('.stats-banner'));
+
+    // ── 스크롤 상단 버튼 ──
+    const scrollTopBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      scrollTopBtn.classList.toggle('show', window.scrollY > 400);
+    });
+
+    // ── 검색 기능 ──
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      document.querySelectorAll('.dest-card').forEach(card => {
+        const name = (card.dataset.name || '').toLowerCase();
+        card.style.display = (!q || name.includes(q)) ? '' : 'none';
+      });
+    });
+
+    // ── 카드 클릭 리플 효과 ──
+    document.querySelectorAll('.dest-card, .intl-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        const ripple = document.createElement('div');
+        const rect = this.getBoundingClientRect();
+        ripple.style.cssText = `
+          position:absolute; border-radius:50%;
+          width:60px; height:60px;
+          background:rgba(255,255,255,0.25);
+          left:${e.clientX - rect.left - 30}px;
+          top:${e.clientY - rect.top - 30}px;
+          transform:scale(0); animation:ripple 0.5s ease-out forwards;
+          pointer-events:none;
+        `;
+        const style = document.createElement('style');
+        style.textContent = `@keyframes ripple{to{transform:scale(5);opacity:0;}}`;
+        document.head.appendChild(style);
+        this.style.position = 'relative';
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 500);
+      });
+    });
+
+    // ── 네비 스크롤 부드럽게 ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // ── 여행지 데이터 ──
+    const DEST_DATA = {
+      jeju: {
+        label: '🇰🇷 국내 · 제주특별자치도',
+        title: '제주도',
+        img: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '28°C', label: '여름 평균' },
+          { icon: '✈️', value: '약 1시간', label: '김포 출발' },
+          { icon: '📅', value: '6 ~ 8월', label: '최적 시기' },
+        ],
+        intro: '한라산을 품은 대한민국 최남단 화산섬. 유네스코 세계자연유산에 등재된 성산일출봉, 만장굴, 한라산이 모두 이곳에 있습니다. 에메랄드빛 협재 해수욕장, 용암이 빚어낸 주상절리, 향긋한 감귤밭과 유채꽃밭까지 — 자연이 만든 거대한 테마파크입니다.',
+        highlights: ['성산일출봉', '한라산 백록담', '협재 해수욕장', '만장굴', '중문 대포주상절리', '우도', '오설록 티뮤지엄'],
+        tip: '🐷 <strong>흑돼지 구이</strong>와 <strong>갈치조림</strong>은 필수 식도락! 렌터카 없이는 이동이 불편하니 미리 예약하세요.',
+      },
+      busan: {
+        label: '🇰🇷 국내 · 부산광역시',
+        title: '부산 해운대',
+        img: 'https://images.unsplash.com/photo-1598824783691-bb84d0960af9?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '30°C', label: '여름 평균' },
+          { icon: '🚄', value: '약 2.5시간', label: 'KTX (서울)' },
+          { icon: '📅', value: '7 ~ 8월', label: '최적 시기' },
+        ],
+        intro: '대한민국 제2의 도시이자 최대 해변 도시. 해운대와 광안리는 국내 최고의 여름 해수욕장으로 손꼽히며, 반얀트리·파라다이스호텔 등 럭셔리 리조트가 즐비합니다. 자갈치시장의 싱싱한 횟감, 국제시장의 먹거리골목, 감천문화마을의 알록달록한 포토 스팟도 놓치면 아쉬움이 남습니다.',
+        highlights: ['해운대 해수욕장', '광안리 해수욕장', '광안대교 야경', '감천문화마을', '자갈치시장', '해동 용궁사', 'BIFF 광장'],
+        tip: '🎆 매년 10월 <strong>불꽃축제</strong>는 전국 최대 규모! 여름엔 해운대 바다 위 파라솔과 함께 <strong>씨앗호떡</strong>을 꼭 드셔보세요.',
+      },
+      gangneung: {
+        label: '🇰🇷 국내 · 강원특별자치도',
+        title: '강릉 경포대',
+        img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '27°C', label: '여름 평균' },
+          { icon: '🚄', value: '약 2시간', label: 'KTX (서울)' },
+          { icon: '📅', value: '6 ~ 9월', label: '최적 시기' },
+        ],
+        intro: '강원도의 정취와 동해의 청량함이 어우러지는 곳. 경포해변은 총 길이 1.8km의 넓은 백사장으로 동해안에서 가장 인기 있는 해수욕장입니다. 안목해변 카페거리에서는 직접 내린 커피 한 잔과 함께 파도 소리를 들을 수 있고, 허균·허난설헌 생가와 오죽헌은 역사 탐방 코스로도 훌륭합니다.',
+        highlights: ['경포해변', '안목해변 카페거리', '오죽헌', '경포호', '강문해변', '정동진 일출', '주문진 수산시장'],
+        tip: '☕ <strong>안목해변 커피거리</strong>는 국내 커피 문화의 성지. 이른 아침 해변에서 맞이하는 <strong>정동진 일출</strong>도 잊지 말아야 할 버킷리스트입니다.',
+      },
+      yeosu: {
+        label: '🇰🇷 국내 · 전라남도',
+        title: '여수',
+        img: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '29°C', label: '여름 평균' },
+          { icon: '🚄', value: '약 2.5시간', label: 'KTX (서울)' },
+          { icon: '📅', value: '5 ~ 10월', label: '최적 시기' },
+        ],
+        intro: '"여수 밤바다, 이 조명에 담긴 아름다운 얘기가…" 노래 가사처럼 여수의 야경은 낭만 그 자체입니다. 돌산대교가 불빛을 반사하는 밤바다, 케이블카에서 내려다보는 다도해의 풍경은 전국에서도 손에 꼽힙니다. 갓김치와 게장, 굴구이 등 전라도 음식의 향연도 이 여행의 핵심입니다.',
+        highlights: ['여수 밤바다', '돌산대교', '여수 해상케이블카', '이순신광장', '오동도', '향일암', '웅천친수공원'],
+        tip: '🦀 <strong>간장게장</strong>과 <strong>갓김치</strong>는 여수가 원조! 여수 엑스포 해양공원에서 야간 분수쇼를 무료로 즐길 수 있습니다.',
+      },
+      tongyeong: {
+        label: '🇰🇷 국내 · 경상남도',
+        title: '통영',
+        img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '28°C', label: '여름 평균' },
+          { icon: '🚌', value: '약 3.5시간', label: '버스 (서울)' },
+          { icon: '📅', value: '4 ~ 10월', label: '최적 시기' },
+        ],
+        intro: '"동양의 나폴리"라는 별명을 가진 통영은 한려해상국립공원의 핵심 거점입니다. 미륵산 케이블카에 오르면 140여 개의 섬이 점점이 박힌 한려수도 풍경이 파노라마로 펼쳐집니다. 거제·남해로 이어지는 해상 코스와 함께 통영의 굴, 꿀빵, 충무김밥은 미식 여행객의 마음을 사로잡습니다.',
+        highlights: ['미륵산 케이블카', '한산도 제승당', '루지 체험', '동피랑 벽화마을', '강구안 문화마당', '욕지도', '소매물도 등대섬'],
+        tip: '🦪 <strong>통영 굴</strong>은 겨울이 제철이지만, 여름엔 <strong>꿀빵</strong>과 <strong>충무김밥</strong>이 기다리고 있습니다. 케이블카는 주말 대기 긴 편이니 평일 이용을 추천!',
+      },
+      sokcho: {
+        label: '🇰🇷 국내 · 강원특별자치도',
+        title: '속초',
+        img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '25°C', label: '여름 평균' },
+          { icon: '🚌', value: '약 2.5시간', label: '버스 (서울)' },
+          { icon: '📅', value: '6 ~ 9월', label: '최적 시기' },
+        ],
+        intro: '설악산 국립공원의 웅장한 암봉과 동해 바다를 동시에 누릴 수 있는 이중 혜택의 도시. 울산바위, 비룡폭포, 봉정암으로 이어지는 등산 코스는 국내 최고 수준입니다. 청초호에서 보트를 타거나 속초해수욕장에서 일광욕을 즐긴 후 아바이마을에서 오징어순대를 맛보는 일정이 정석 코스입니다.',
+        highlights: ['설악산 울산바위', '권금성 케이블카', '속초해수욕장', '청초호', '아바이마을', '설악 워터피아', '외옹치 바다향기로'],
+        tip: '🦑 <strong>아바이마을</strong>의 오징어순대와 <strong>닭강정</strong>은 속초 대표 먹거리! 설악산 단풍 시즌(10월)엔 숙소 예약이 몇 달 전부터 꽉 찹니다.',
+      },
+      bali: {
+        label: '🇮🇩 인도네시아 · 발리주',
+        title: '발리 (Bali)',
+        img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '31°C', label: '연평균' },
+          { icon: '✈️', value: '약 7시간', label: '인천 출발' },
+          { icon: '📅', value: '4 ~ 10월', label: '건기 (최적)' },
+        ],
+        intro: '인도네시아 소순다 열도의 보석, 발리는 "신들의 섬"이라 불립니다. 떼갈랄랑의 계단식 논, 우붓의 원숭이 숲, 꾸따·세미냑·짱구의 서핑 비치, 따나롯의 해상 힌두 사원까지 — 자연·문화·예술이 완벽하게 어우러진 세계적인 휴양지입니다. 발리 힌두교 의식과 케착 댄스는 다른 곳에서 경험할 수 없는 독특한 문화 체험입니다.',
+        highlights: ['떼갈랄랑 라이스 테라스', '따나롯 사원', '우붓 원숭이 숲', '꾸따 해변 서핑', '짱구 카페 투어', '울루와뚜 절벽 사원', '스미냑 나이트라이프'],
+        tip: '🛵 이동 시 <strong>고젝(Gojek) 오토바이</strong> 앱을 적극 활용하세요. 우붓에서 발리 전통 마사지를 받으면 여행의 피로가 싹 풀립니다!',
+      },
+      hawaii: {
+        label: '🇺🇸 미국 · 하와이주',
+        title: '하와이 (Hawaii)',
+        img: 'https://images.unsplash.com/photo-1483168527879-c66136b56105?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '29°C', label: '연평균' },
+          { icon: '✈️', value: '약 9시간', label: '인천 출발' },
+          { icon: '📅', value: '4 ~ 9월', label: '건기 (최적)' },
+        ],
+        intro: '태평양 한가운데 솟아오른 화산 군도, 하와이는 미국이면서도 완전히 다른 세계입니다. 오아후 섬의 와이키키 해변, 마우이 섬의 할레아칼라 분화구 일출, 빅아일랜드의 실시간 용암 분출은 평생 잊지 못할 장면을 선사합니다. 훌라 댄스와 루아우 파티에서 폴리네시아 문화를 온몸으로 체험해보세요.',
+        highlights: ['와이키키 해변', '다이아몬드 헤드 트래킹', '할레아칼라 일출', '하나우마 베이 스노클링', '나팔리 코스트 보트 투어', '볼케이노 국립공원', '마우이 로드 투 하나'],
+        tip: '🤙 "<strong>Aloha</strong>"는 하와이의 인사이자 삶의 철학! 코나 커피와 아히 포케볼은 현지에서 꼭 먹어야 할 음식입니다.',
+      },
+      maldives: {
+        label: '🇲🇻 몰디브 공화국',
+        title: '몰디브 (Maldives)',
+        img: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '30°C', label: '연평균' },
+          { icon: '✈️', value: '약 9시간', label: '인천 출발' },
+          { icon: '📅', value: '11 ~ 4월', label: '건기 (최적)' },
+        ],
+        intro: '인도양에 흩뿌려진 1,200여 개의 산호 섬으로 이루어진 지상 최고의 럭셔리 휴양지. 수면 위에 떠 있는 오버워터 방갈로에서 눈을 뜨면 형광빛 청록색 바다가 사방을 감쌉니다. 세계 최고 수준의 산호초 다이빙과 스노클링, 그리고 밤이 되면 바닷속에서 빛나는 생물 발광(Bioluminescence) 해변은 꿈 같은 경험을 선사합니다.',
+        highlights: ['오버워터 방갈로 숙박', '산호초 다이빙·스노클링', '생물 발광 해변', '만타레이 관찰', '수상 비행기 이동', '선셋 크루즈', '수중 레스토랑 다이닝'],
+        tip: '💳 몰디브는 거의 모든 활동에 <strong>추가 비용</strong>이 발생합니다. 리조트 올인클루시브 패키지를 선택하면 예산 관리가 훨씬 편해요.',
+      },
+      santorini: {
+        label: '🇬🇷 그리스 · 에게 해',
+        title: '산토리니 (Santorini)',
+        img: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '27°C', label: '여름 평균' },
+          { icon: '✈️', value: '약 13시간', label: '경유 포함' },
+          { icon: '📅', value: '5 ~ 9월', label: '최적 시기' },
+        ],
+        intro: '화산 폭발로 생긴 초승달 모양의 칼데라 위에 새하얀 집들이 층층이 쌓인 지중해의 아이콘. 이아(Oia) 마을에서 바라보는 석양은 세계 3대 일몰 중 하나로 꼽힙니다. 파란 돔 교회와 흰 벽의 조화는 어느 각도에서 찍어도 엽서 같은 사진을 만들어 내며, 아크로티리 고고 유적지에서는 고대 미노아 문명의 흔적도 만날 수 있습니다.',
+        highlights: ['이아 마을 선셋', '피라 구시가지', '아모우디 베이', '아크로티리 유적', '레드 비치·블랙 비치', '칼데라 뷰 레스토랑', '와인 투어 (아시르티코)'],
+        tip: '📸 이아 선셋은 전 세계 관광객이 몰리는 명소. <strong>1시간 전</strong>부터 자리를 잡아야 좋은 뷰를 확보할 수 있습니다!',
+      },
+      danang: {
+        label: '🇻🇳 베트남 · 중부',
+        title: '다낭 (Da Nang)',
+        img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '33°C', label: '여름 평균' },
+          { icon: '✈️', value: '약 4.5시간', label: '인천 출발' },
+          { icon: '📅', value: '2 ~ 8월', label: '건기 (최적)' },
+        ],
+        intro: '베트남 중부의 관문 도시 다낭은 합리적인 비용으로 즐기는 최고급 리조트 여행지로 각광받고 있습니다. 27km에 달하는 미케(My Khe) 해변, 황금 다리를 품은 바나힐(Ba Na Hills) 테마파크, 유네스코 세계문화유산 호이안(Hoi An) 고대도시까지 차로 30분 거리에 모여 있어 일정 짜기도 편합니다.',
+        highlights: ['미케 해변', '바나힐 황금 다리', '호이안 올드타운', '오행산(마블 마운틴)', '드래곤 브릿지 불쇼', '한 시장 쇼핑', '미썬 유적지'],
+        tip: '🍜 <strong>미꽝(Mi Quang)</strong>과 <strong>반미(Bánh Mì)</strong>는 다낭식 로컬 맛집에서 즐겨야 진짜! 호이안 야시장의 밤은 절대 놓치지 마세요.',
+      },
+      okinawa: {
+        label: '🇯🇵 일본 · 오키나와현',
+        title: '오키나와 (Okinawa)',
+        img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '30°C', label: '여름 평균' },
+          { icon: '✈️', value: '약 2.5시간', label: '인천 출발' },
+          { icon: '📅', value: '4 ~ 9월', label: '최적 시기' },
+        ],
+        intro: '일본 본토와는 전혀 다른 문화권을 가진 류큐 왕국의 땅. 투명도 세계 최고 수준의 에메랄드빛 바다와 산호초는 스노클링과 다이빙의 메카입니다. 세계 최대 규모의 수족관 추라우미와 류큐 문화를 담은 슈리성, 게라마 제도의 무인도 해변까지 — 일본 문화와 열대 해양이 만나는 독특한 여행지입니다.',
+        highlights: ['추라우미 수족관', '슈리성', '게라마 제도 다이빙', '나하 국제거리', '만좌모 절벽', '비세 후쿠기 가로수길', '자마미 섬 스노클링'],
+        tip: '🥘 <strong>오키나와 소바</strong>와 <strong>참푸루(チャンプルー)</strong>는 본토와 다른 오키나와만의 맛. 류큐 유리공예 체험도 색다른 추억이 됩니다!',
+      },
+      cebu: {
+        label: '🇵🇭 필리핀 · 세부주',
+        title: '세부 (Cebu)',
+        img: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '31°C', label: '연평균' },
+          { icon: '✈️', value: '약 4시간', label: '인천 출발' },
+          { icon: '📅', value: '11 ~ 5월', label: '건기 (최적)' },
+        ],
+        intro: '필리핀 중부 비사야 지방의 중심 섬 세부. 오슬롭(Oslob)에서 세계 최대 어류 고래상어(Whaleshark)와 함께 스노클링하는 경험은 세부에서만 가능한 버킷리스트입니다. 이슬라 데 막탄의 리조트 지구, 보홀 섬의 초코산(Chocolate Hills), 카와산 폭포 캐녀닝까지 다양한 액티비티가 기다립니다.',
+        highlights: ['고래상어 스노클링 (오슬롭)', '보홀 초코산', '카와산 폭포 캐녀닝', '막탄 섬 리조트', '마젤란 십자가 성당', 'SM 시티 세부 쇼핑', '썬셋 크루즈'],
+        tip: '🦈 고래상어 투어는 <strong>오전 6~7시</strong>에 시작해야 최상의 컨디션! 오슬롭까지 세부 시티에서 차로 3~4시간 거리입니다.',
+      },
+      samui: {
+        label: '🇹🇭 태국 · 쑤랏타니주',
+        title: '코사무이 (Koh Samui)',
+        img: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=900&h=460&fit=crop&q=85',
+        stats: [
+          { icon: '🌡️', value: '32°C', label: '연평균' },
+          { icon: '✈️', value: '약 6시간', label: '경유 포함' },
+          { icon: '📅', value: '12 ~ 5월', label: '건기 (최적)' },
+        ],
+        intro: '태국 만(灣)에 자리한 코사무이는 야자수 가득한 해변과 럭셔리 풀빌라로 신혼여행객과 커플 여행자들의 사랑을 듬뿍 받는 섬입니다. 나통 해변, 초엥몬 해변 등 아름다운 해안선을 따라 스파와 마사지 숍이 즐비하며, 수렉 폭포·빅 부다 사원 같은 내륙 명소도 빠질 수 없는 코스입니다. 이웃 섬 코팡안의 풀문 파티도 유명합니다.',
+        highlights: ['나통 해변', '초엥몬 비치', '빅 부다 사원', '수렉 폭포', '코팡안 풀문 파티', '촉라오 야시장', '쌍어 폭포'],
+        tip: '💆 코사무이 <strong>타이 마사지</strong>는 2시간에 약 400~600바트(1.5~2만원)로 매우 합리적. 스파 리조트 패키지를 이용하면 더욱 알찬 여행이 가능합니다!',
+      },
+    };
+
+    // ── 모달 동작 ──
+    const overlay   = document.getElementById('modalOverlay');
+    const modalImg  = document.getElementById('modalImg');
+    const modalLabel= document.getElementById('modalLabel');
+    const modalTitle= document.getElementById('modalTitle');
+    const modalStats= document.getElementById('modalStats');
+    const modalIntro= document.getElementById('modalIntro');
+    const modalHL   = document.getElementById('modalHighlights');
+    const modalTips = document.getElementById('modalTips');
+
+    function openModal(destKey) {
+      const d = DEST_DATA[destKey];
+      if (!d) return;
+
+      modalImg.src      = d.img;
+      modalImg.alt      = d.title;
+      modalLabel.textContent = d.label;
+      modalTitle.textContent = d.title;
+
+      modalStats.innerHTML = d.stats.map(s =>
+        `<div class="modal-stat">
+          <span class="modal-stat-icon">${s.icon}</span>
+          <span class="modal-stat-value">${s.value}</span>
+          <span class="modal-stat-label">${s.label}</span>
+        </div>`
+      ).join('');
+
+      modalIntro.textContent = d.intro;
+
+      modalHL.innerHTML = d.highlights.map(h =>
+        `<span class="modal-highlight-chip">${h}</span>`
+      ).join('');
+
+      modalTips.innerHTML = `<div class="modal-section-title" style="margin-bottom:0.5rem">여행 꿀팁</div><p>${d.tip}</p>`;
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    document.querySelectorAll('[data-dest]').forEach(el => {
+      el.addEventListener('click', () => openModal(el.dataset.dest));
+    });
+
+    // ── 파티클 마우스 트레일 ──
+    let trail = [];
+    document.addEventListener('mousemove', e => {
+      const dot = document.createElement('div');
+      dot.style.cssText = `
+        position:fixed; pointer-events:none; z-index:9999;
+        width:6px; height:6px; border-radius:50%;
+        background:rgba(255,215,0,0.7);
+        left:${e.clientX-3}px; top:${e.clientY-3}px;
+        transition:opacity 0.5s; box-shadow:0 0 6px rgba(255,215,0,0.8);
+      `;
+      document.body.appendChild(dot);
+      setTimeout(() => { dot.style.opacity = '0'; setTimeout(() => dot.remove(), 500); }, 100);
+    });
+  </script>
+</body>
+</html>
