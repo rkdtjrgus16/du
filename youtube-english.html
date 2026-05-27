@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>유튜브 영어 학습 🎬</title>
+  <style>
+    /* ── 기본 리셋 & 변수 ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --card: #16213e;
+      --accent: #e94560;
+      --accent2: #0f3460;
+      --text: #eaeaea;
+      --text-muted: #888;
+      --highlight: #ffe066;
+      --highlight-bg: rgba(255, 224, 102, 0.18);
+      --success: #4caf50;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: var(--surface);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    header h1 { font-size: 1.4rem; font-weight: 700; }
+    header h1 span { color: var(--accent); }
+
+    /* ── 오늘의 한줄 배너 ── */
+    #today-banner {
+      background: linear-gradient(135deg, var(--accent2), #1a1a4e);
+      border-left: 4px solid var(--highlight);
+      padding: 0.8rem 2rem;
+      display: none; /* 북마크 있을 때만 표시 */
+    }
+
+    #today-banner .label {
+      font-size: 0.7rem;
+      color: var(--highlight);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    #today-banner .sentence {
+      font-size: 1rem;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    /* ── URL 입력 영역 ── */
+    #url-section {
+      padding: 1.5rem 2rem;
+      background: var(--surface);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    #url-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 2px solid var(--accent2);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #url-input:focus { border-color: var(--accent); }
+    #url-input::placeholder { color: var(--text-muted); }
+
+    #load-btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    #load-btn:hover { opacity: 0.85; }
+
+    /* ── 메인 레이아웃: 영상 + 자막 ── */
+    #main-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      min-height: 460px;
+    }
+
+    /* 영상 박스 */
+    #player-box {
+      background: #000;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      position: relative;
+    }
+
+    #player-box iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    #player-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      gap: 0.5rem;
+    }
+
+    #player-placeholder .icon { font-size: 3rem; }
+
+    /* 자막 박스 */
+    #subtitle-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--accent2);
+    }
+
+    #subtitle-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--accent2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    #subtitle-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    #subtitle-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+      scroll-behavior: smooth;
+      max-height: 400px;
+    }
+
+    /* 자막 한 줄 */
+    .subtitle-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.4rem 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 2px;
+    }
+
+    .subtitle-line:hover { background: rgba(255,255,255,0.06); }
+
+    .subtitle-line.active {
+      background: var(--highlight-bg);
+      border-left: 3px solid var(--highlight);
+    }
+
+    .subtitle-line .time {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      min-width: 38px;
+      padding-top: 2px;
+    }
+
+    .subtitle-line .text {
+      flex: 1;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    /* 단어 클릭 스타일 */
+    .subtitle-line .text span.word {
+      cursor: pointer;
+      border-radius: 3px;
+      padding: 0 1px;
+      transition: background 0.1s;
+    }
+
+    .subtitle-line .text span.word:hover {
+      background: rgba(233, 69, 96, 0.35);
+      color: var(--highlight);
+    }
+
+    .subtitle-line .text span.word.saved {
+      color: var(--highlight);
+      font-weight: 600;
+    }
+
+    /* ★ 북마크 버튼 */
+    .subtitle-line .bookmark-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 0 2px;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+
+    .subtitle-line .bookmark-btn:hover { color: var(--highlight); }
+    .subtitle-line .bookmark-btn.saved { color: var(--highlight); }
+
+    /* ── 하단 탭: 단어장 / 북마크 ── */
+    #bottom-panel {
+      margin: 0 2rem 2rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--accent2);
+      overflow: hidden;
+    }
+
+    #tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--accent2);
+    }
+
+    .tab-btn {
+      padding: 0.65rem 1.25rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tab-panel { display: none; padding: 1rem; min-height: 120px; }
+    .tab-panel.active { display: block; }
+
+    .word-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .word-chip {
+      background: var(--accent2);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .word-chip:hover { background: var(--accent); }
+
+    .word-chip .del {
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+
+    .bookmark-item {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .bookmark-item:last-child { border-bottom: none; }
+
+    .bookmark-item .del-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .empty-msg {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    /* ── 알림 토스트 ── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--success);
+      color: #fff;
+      padding: 0.6rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ── .srt 업로드 ── */
+    #srt-fallback {
+      padding: 0.5rem 1rem;
+      border-top: 1px solid var(--accent2);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    #srt-input { display: none; }
+
+    #srt-label {
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    #srt-label:hover { text-decoration: underline; }
+
+    /* ── 반응형 (모바일) ── */
+    @media (max-width: 768px) {
+      #main-layout {
+        grid-template-columns: 1fr;
+        padding: 0.75rem;
+      }
+
+      #subtitle-list { max-height: 280px; }
+      #url-section { padding: 0.75rem; }
+      #bottom-panel { margin: 0 0.75rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header>
+  <span style="font-size:1.6rem">🎬</span>
+  <h1>유튜브 <span>영어 학습</span></h1>
+  <span style="color:var(--text-muted);font-size:0.8rem;margin-left:auto">단어 클릭 저장 • 문장 북마크 • 오늘의 한줄</span>
+</header>
+
+<!-- ── 오늘의 한줄 배너 ── -->
+<div id="today-banner">
+  <div class="label">⭐ 오늘의 한줄</div>
+  <div class="sentence" id="today-sentence">—</div>
+</div>
+
+<!-- ── URL 입력 ── -->
+<div id="url-section">
+  <input
+    type="text"
+    id="url-input"
+    placeholder="유튜브 URL 붙여넣기 (예: https://www.youtube.com/watch?v=...)"
+  />
+  <button id="load-btn" onclick="loadVideo()">▶ 불러오기</button>
+</div>
+
+<!-- ── 영상 + 자막 ── -->
+<div id="main-layout">
+  <!-- 영상 -->
+  <div id="player-box">
+    <div id="player-placeholder">
+      <div class="icon">🎥</div>
+      <div>유튜브 URL을 입력하세요</div>
+    </div>
+    <!-- YouTube IFrame API가 여기에 삽입됩니다 -->
+    <div id="yt-player"></div>
+  </div>
+
+  <!-- 자막 -->
+  <div id="subtitle-box">
+    <div id="subtitle-header">
+      <span>📄 자막</span>
+      <span id="subtitle-status">—</span>
+    </div>
+    <div id="subtitle-list">
+      <div class="empty-msg">영상을 불러오면 자막이 여기에 표시됩니다</div>
+    </div>
+    <!-- .srt 직접 업로드 폴백 -->
+    <div id="srt-fallback">
+      자막이 안 나오면?
+      <label id="srt-label" for="srt-input">📂 .srt 파일 직접 올리기</label>
+      <input type="file" id="srt-input" accept=".srt,.vtt" onchange="loadSrtFile(event)">
+    </div>
+  </div>
+</div>
+
+<!-- ── 단어장 / 북마크 탭 ── -->
+<div id="bottom-panel">
+  <div id="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('words', this)">📚 단어장</button>
+    <button class="tab-btn" onclick="switchTab('bookmarks', this)">⭐ 북마크</button>
+  </div>
+  <div id="tab-words" class="tab-panel active">
+    <div class="empty-msg" id="words-empty">자막에서 단어를 클릭하면 여기에 저장됩니다</div>
+    <div class="word-chips" id="word-chips"></div>
+  </div>
+  <div id="tab-bookmarks" class="tab-panel">
+    <div class="empty-msg" id="bookmarks-empty">★ 버튼으로 문장을 북마크하세요</div>
+    <div id="bookmark-list"></div>
+  </div>
+</div>
+
+<!-- ── 알림 토스트 ── -->
+<div id="toast"></div>
+
+<!-- ── YouTube IFrame API ── -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+  /* ============================================================
+     상태 변수
+  ============================================================ */
+  let player = null;          // YT.Player 인스턴스
+  let subtitles = [];         // [{start, dur, text}, ...]
+  let syncInterval = null;    // 자막 싱크 인터벌
+  let currentVideoId = '';
+
+  // localStorage 키
+  const WORDS_KEY = 'yel_words';       // 단어장
+  const BOOKMARKS_KEY = 'yel_bookmarks'; // 북마크 문장
+
+  /* ============================================================
+     초기화
+  ============================================================ */
+  window.onload = () => {
+    renderWords();
+    renderBookmarks();
+    renderTodaySentence();
+  };
+
+  /* ============================================================
+     1. 유튜브 URL → 영상 ID 파싱
+  ============================================================ */
+  function extractVideoId(url) {
+    // 지원 형식:
+    //   https://www.youtube.com/watch?v=VIDEO_ID
+    //   https://youtu.be/VIDEO_ID
+    //   https://www.youtube.com/embed/VIDEO_ID
+    const patterns = [
+      /[?&]v=([a-zA-Z0-9_-]{11})/,
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /embed\/([a-zA-Z0-9_-]{11})/,
+    ];
+    for (const re of patterns) {
+      const m = url.match(re);
+      if (m) return m[1];
+    }
+    // 11자 짜리 ID만 입력한 경우
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url.trim())) return url.trim();
+    return null;
+  }
+
+  /* ============================================================
+     2. 영상 불러오기
+  ============================================================ */
+  function loadVideo() {
+    const url = document.getElementById('url-input').value.trim();
+    const videoId = extractVideoId(url);
+
+    if (!videoId) {
+      showToast('❌ 유효한 유튜브 URL을 입력하세요', 'red');
+      return;
+    }
+
+    currentVideoId = videoId;
+    document.getElementById('player-placeholder').style.display = 'none';
+
+    // 자막 초기화
+    subtitles = [];
+    document.getElementById('subtitle-list').innerHTML =
+      '<div class="empty-msg">자막 불러오는 중...</div>';
+    setSubtitleStatus('불러오는 중...');
+
+    // YouTube IFrame 플레이어 생성
+    if (player) {
+      player.loadVideoById(videoId);
+    } else {
+      player = new YT.Player('yt-player', {
+        videoId: videoId,
+        width: '100%',
+        height: '100%',
+        playerVars: { rel: 0, modestbranding: 1 },
+        events: {
+          onReady: () => {
+            startSyncLoop();
+          }
+        }
+      });
+    }
+
+    // 자막 가져오기
+    fetchSubtitles(videoId);
+  }
+
+  /* ============================================================
+     3. 자막 가져오기 — 비공식 timedtext URL
+  ============================================================ */
+  async function fetchSubtitles(videoId) {
+    // 방법 1: YouTube 비공식 timedtext URL (직접)
+    const directUrl =
+      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3`;
+
+    try {
+      const res = await fetch(directUrl);
+      if (res.ok) {
+        const data = await res.json();
+        parseTimedText(data);
+        return;
+      }
+    } catch (e) {
+      console.log('직접 timedtext 실패, CORS 프록시 시도...');
+    }
+
+    // 방법 2: CORS 프록시 경유
+    const proxyUrl =
+      `https://api.allorigins.win/get?url=${encodeURIComponent(directUrl)}`;
+
+    try {
+      const res = await fetch(proxyUrl);
+      if (res.ok) {
+        const json = await res.json();
+        const data = JSON.parse(json.contents);
+        parseTimedText(data);
+        return;
+      }
+    } catch (e) {
+      console.log('프록시도 실패:', e);
+    }
+
+    // 방법 3: 자동 생성 자막 시도 (lang=en&kind=asr)
+    const asrUrl =
+      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&kind=asr&fmt=json3`;
+    const proxyAsr =
+      `https://api.allorigins.win/get?url=${encodeURIComponent(asrUrl)}`;
+
+    try {
+      const res = await fetch(proxyAsr);
+      if (res.ok) {
+        const json = await res.json();
+        const data = JSON.parse(json.contents);
+        parseTimedText(data, true);
+        return;
+      }
+    } catch (e) {
+      console.log('ASR 자막도 실패:', e);
+    }
+
+    // 모두 실패 → 안내 메시지
+    document.getElementById('subtitle-list').innerHTML = `
+      <div class="empty-msg">
+        ⚠️ 자막을 자동으로 가져오지 못했어요.<br>
+        아래 <strong>"📂 .srt 파일 직접 올리기"</strong>를 이용해보세요.<br><br>
+        <small style="color:#666">
+          YouTube에서 자막 다운로드:<br>
+          영상 아래 ··· → 자막 저장
+        </small>
+      </div>`;
+    setSubtitleStatus('자막 없음');
+  }
+
+  /* ============================================================
+     4. timedtext JSON 파싱
+  ============================================================ */
+  function parseTimedText(data, isAsr = false) {
+    if (!data || !data.events) {
+      document.getElementById('subtitle-list').innerHTML =
+        '<div class="empty-msg">이 영상에는 자막이 없어요</div>';
+      setSubtitleStatus('자막 없음');
+      return;
+    }
+
+    subtitles = data.events
+      .filter(e => e.segs) // 텍스트가 있는 이벤트만
+      .map(e => ({
+        start: e.tStartMs / 1000,           // ms → 초
+        dur: (e.dDurationMs || 2000) / 1000,
+        text: e.segs.map(s => s.utf8 || '').join('').trim()
+      }))
+      .filter(s => s.text && s.text !== '\n');
+
+    if (subtitles.length === 0) {
+      document.getElementById('subtitle-list').innerHTML =
+        '<div class="empty-msg">자막 데이터가 비어있어요</div>';
+      setSubtitleStatus('자막 없음');
+      return;
+    }
+
+    renderSubtitles();
+    setSubtitleStatus(`${subtitles.length}줄${isAsr ? ' (자동생성)' : ''}`);
+  }
+
+  /* ============================================================
+     5. 자막 렌더링
+  ============================================================ */
+  function renderSubtitles() {
+    const savedWords = getSavedWords();
+    const list = document.getElementById('subtitle-list');
+
+    list.innerHTML = subtitles.map((s, i) => {
+      // 단어를 클릭 가능한 span으로 분리
+      const wordHtml = s.text.replace(/([a-zA-Z']+)/g, (match) => {
+        const lower = match.toLowerCase().replace(/'/g, '');
+        const isSaved = savedWords.includes(lower);
+        return `<span class="word${isSaved ? ' saved' : ''}"
+          onclick="saveWord('${lower}', this)">${match}</span>`;
+      });
+
+      return `
+        <div class="subtitle-line" id="sub-${i}" data-index="${i}">
+          <span class="time">${formatTime(s.start)}</span>
+          <span class="text">${wordHtml}</span>
+          <button class="bookmark-btn${isBookmarked(s.text) ? ' saved' : ''}"
+            onclick="toggleBookmark('${escapeQuote(s.text)}', this)"
+            title="문장 북마크">★</button>
+        </div>`;
+    }).join('');
+  }
+
+  /* ============================================================
+     6. 자막 싱크 루프 (현재 재생 시간에 맞춰 하이라이트)
+  ============================================================ */
+  function startSyncLoop() {
+    if (syncInterval) clearInterval(syncInterval);
+    syncInterval = setInterval(() => {
+      if (!player || !player.getCurrentTime) return;
+      const t = player.getCurrentTime();
+      highlightCurrentSubtitle(t);
+    }, 300); // 300ms마다 확인
+  }
+
+  function highlightCurrentSubtitle(currentTime) {
+    if (!subtitles.length) return;
+
+    // 현재 시간에 해당하는 자막 인덱스 찾기
+    const idx = subtitles.findIndex(
+      s => currentTime >= s.start && currentTime < s.start + s.dur
+    );
+
+    // 이전 active 제거
+    document.querySelectorAll('.subtitle-line.active')
+      .forEach(el => el.classList.remove('active'));
+
+    if (idx >= 0) {
+      const el = document.getElementById(`sub-${idx}`);
+      if (el) {
+        el.classList.add('active');
+        // 자막 박스 내에서 현재 라인이 보이도록 스크롤
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }
+
+  /* ============================================================
+     7. 자막 라인 클릭 → 해당 시간으로 영상 이동
+  ============================================================ */
+  document.addEventListener('click', (e) => {
+    const line = e.target.closest('.subtitle-line');
+    if (line && !e.target.closest('.word') && !e.target.closest('.bookmark-btn')) {
+      const idx = parseInt(line.dataset.index);
+      if (player && subtitles[idx]) {
+        player.seekTo(subtitles[idx].start, true);
+      }
+    }
+  });
+
+  /* ============================================================
+     8. 단어 저장
+  ============================================================ */
+  function saveWord(word, el) {
+    if (!word) return;
+    const words = getSavedWords();
+    if (!words.includes(word)) {
+      words.push(word);
+      localStorage.setItem(WORDS_KEY, JSON.stringify(words));
+      el.classList.add('saved');
+      showToast(`"${word}" 단어장에 저장됨 📚`);
+      renderWords();
+    } else {
+      showToast(`"${word}" 이미 저장된 단어예요`);
+    }
+  }
+
+  function getSavedWords() {
+    return JSON.parse(localStorage.getItem(WORDS_KEY) || '[]');
+  }
+
+  function deleteWord(word) {
+    const words = getSavedWords().filter(w => w !== word);
+    localStorage.setItem(WORDS_KEY, JSON.stringify(words));
+    renderWords();
+    renderSubtitles(); // 자막에서 저장 표시 업데이트
+  }
+
+  function renderWords() {
+    const words = getSavedWords();
+    const container = document.getElementById('word-chips');
+    const empty = document.getElementById('words-empty');
+
+    if (words.length === 0) {
+      empty.style.display = 'block';
+      container.innerHTML = '';
+      return;
+    }
+
+    empty.style.display = 'none';
+    container.innerHTML = words.map(w => `
+      <div class="word-chip">
+        ${w}
+        <span class="del" onclick="deleteWord('${w}')" title="삭제">✕</span>
+      </div>`).join('');
+  }
+
+  /* ============================================================
+     9. 문장 북마크
+  ============================================================ */
+  function toggleBookmark(sentence, btn) {
+    const bookmarks = getBookmarks();
+    if (isBookmarked(sentence)) {
+      const updated = bookmarks.filter(b => b !== sentence);
+      localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(updated));
+      btn.classList.remove('saved');
+      showToast('북마크 제거됨');
+    } else {
+      bookmarks.push(sentence);
+      localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+      btn.classList.add('saved');
+      showToast('⭐ 북마크 저장됨!');
+      renderTodaySentence();
+    }
+    renderBookmarks();
+  }
+
+  function isBookmarked(sentence) {
+    return getBookmarks().includes(sentence);
+  }
+
+  function getBookmarks() {
+    return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]');
+  }
+
+  function deleteBookmark(sentence) {
+    const updated = getBookmarks().filter(b => b !== sentence);
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(updated));
+    renderBookmarks();
+    renderTodaySentence();
+  }
+
+  function renderBookmarks() {
+    const bookmarks = getBookmarks();
+    const container = document.getElementById('bookmark-list');
+    const empty = document.getElementById('bookmarks-empty');
+
+    if (bookmarks.length === 0) {
+      empty.style.display = 'block';
+      container.innerHTML = '';
+      return;
+    }
+
+    empty.style.display = 'none';
+    container.innerHTML = bookmarks.map((b, i) => `
+      <div class="bookmark-item">
+        <span>${b}</span>
+        <button class="del-btn" onclick="deleteBookmark('${escapeQuote(b)}')" title="삭제">✕</button>
+      </div>`).join('');
+  }
+
+  /* ============================================================
+     10. 오늘의 한줄 (날짜 기반 시드로 하루에 같은 문장)
+  ============================================================ */
+  function renderTodaySentence() {
+    const bookmarks = getBookmarks();
+    const banner = document.getElementById('today-banner');
+
+    if (bookmarks.length === 0) {
+      banner.style.display = 'none';
+      return;
+    }
+
+    // 날짜 기반 인덱스 (오늘 날짜의 숫자합 % 북마크 수)
+    const today = new Date();
+    const seed = today.getFullYear() * 10000
+      + (today.getMonth() + 1) * 100
+      + today.getDate();
+    const idx = seed % bookmarks.length;
+
+    document.getElementById('today-sentence').textContent = bookmarks[idx];
+    banner.style.display = 'block';
+  }
+
+  /* ============================================================
+     11. .srt 파일 직접 업로드 (폴백)
+  ============================================================ */
+  function loadSrtFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const srtText = e.target.result;
+      subtitles = parseSrt(srtText);
+      if (subtitles.length > 0) {
+        renderSubtitles();
+        setSubtitleStatus(`${subtitles.length}줄 (파일 업로드)`);
+        showToast(`✅ 자막 ${subtitles.length}줄 불러왔어요`);
+        if (player) startSyncLoop();
+      } else {
+        showToast('❌ 자막 파싱 실패');
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function parseSrt(text) {
+    // SRT 형식: 번호\n타임코드 --> 타임코드\n텍스트\n\n
+    const blocks = text.trim().split(/\n\n+/);
+    return blocks.map(block => {
+      const lines = block.split('\n');
+      if (lines.length < 3) return null;
+
+      // 타임코드 파싱: 00:00:01,234 --> 00:00:03,456
+      const timeMatch = lines[1].match(
+        /(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/
+      );
+      if (!timeMatch) return null;
+
+      const toSec = (h, m, s, ms) =>
+        parseInt(h) * 3600 + parseInt(m) * 60 + parseInt(s) + parseInt(ms) / 1000;
+
+      const start = toSec(timeMatch[1], timeMatch[2], timeMatch[3], timeMatch[4]);
+      const end   = toSec(timeMatch[5], timeMatch[6], timeMatch[7], timeMatch[8]);
+      const text  = lines.slice(2).join(' ').replace(/<[^>]+>/g, '').trim();
+
+      return { start, dur: end - start, text };
+    }).filter(Boolean);
+  }
+
+  /* ============================================================
+     유틸리티
+  ============================================================ */
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function setSubtitleStatus(msg) {
+    document.getElementById('subtitle-status').textContent = msg;
+  }
+
+  function escapeQuote(str) {
+    return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+
+  function showToast(msg, color = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.background = color || 'var(--success)';
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+  }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${name}`).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Enter 키로 불러오기
+  document.getElementById('url-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loadVideo();
+  });
+</script>
+</body>
+</html>
