@@ -537,66 +537,138 @@
   }
 
   /* ============================================================
-     3. 자막 가져오기 — 비공식 timedtext URL
+     3. 자막 가져오기 — YouTube 페이지에서 실제 자막 URL 추출
   ============================================================ */
+
+  // CORS 프록시 목록 (순서대로 시도)
+  const PROXIES = [
+    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  ];
+
+  // 프록시를 통해 URL을 가져오고 텍스트(html/json 문자열)를 반환
+  async function fetchViaProxy(url, proxyFn) {
+    const proxyUrl = proxyFn(url);
+    const res = await fetch(proxyUrl, {
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    // allorigins는 {contents: "..."} JSON 형태로 감쌈
+    // corsproxy.io는 raw 텍스트 반환
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      const json = await res.json();
+      return json.contents ?? JSON.stringify(json);
+    }
+    return await res.text();
+  }
+
+  // captionTracks 배열을 HTML에서 추출 (괄호 카운팅 방식 — regex보다 안전)
+  function extractCaptionTracks(html) {
+    const key = '"captionTracks":';
+    const start = html.indexOf(key);
+    if (start === -1) return null;
+
+    const arrStart = html.indexOf('[', start + key.length);
+    if (arrStart === -1) return null;
+
+    let depth = 0, end = -1;
+    for (let i = arrStart; i < Math.min(arrStart + 50000, html.length); i++) {
+      const c = html[i];
+      if (c === '[' || c === '{') depth++;
+      else if (c === ']' || c === '}') {
+        depth--;
+        if (depth === 0) { end = i + 1; break; }
+      }
+    }
+    if (end === -1) return null;
+
+    // YouTube는 JSON 안에 & 같은 유니코드 이스케이프를 씀 → 변환
+    const raw = html.slice(arrStart, end)
+      .replace(/\\u0026/g, '&')
+      .replace(/\\u003d/g, '=')
+      .replace(/\\u003c/g, '<')
+      .replace(/\\u003e/g, '>');
+
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+
   async function fetchSubtitles(videoId) {
-    // 방법 1: YouTube 비공식 timedtext URL (직접)
-    const directUrl =
-      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3`;
+    setSubtitleStatus('불러오는 중...');
 
-    try {
-      const res = await fetch(directUrl);
-      if (res.ok) {
-        const data = await res.json();
-        parseTimedText(data);
-        return;
+    const pageUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+    // ── 단계 1: YouTube 페이지 → 실제 자막 URL 추출 ──
+    let captionTracks = null;
+
+    for (const proxyFn of PROXIES) {
+      try {
+        const html = await fetchViaProxy(pageUrl, proxyFn);
+        captionTracks = extractCaptionTracks(html);
+        if (captionTracks && captionTracks.length > 0) break;
+      } catch (e) {
+        console.warn('페이지 가져오기 실패:', e.message);
       }
-    } catch (e) {
-      console.log('직접 timedtext 실패, CORS 프록시 시도...');
     }
 
-    // 방법 2: CORS 프록시 경유
-    const proxyUrl =
-      `https://api.allorigins.win/get?url=${encodeURIComponent(directUrl)}`;
+    if (captionTracks && captionTracks.length > 0) {
+      // 영어 트랙 우선 (수동 > 자동생성), 없으면 첫 번째 트랙
+      const track =
+        captionTracks.find(t => t.languageCode === 'en' && t.kind !== 'asr') ||
+        captionTracks.find(t => t.languageCode === 'en') ||
+        captionTracks.find(t => t.languageCode?.startsWith('en')) ||
+        captionTracks[0];
 
-    try {
-      const res = await fetch(proxyUrl);
-      if (res.ok) {
-        const json = await res.json();
-        const data = JSON.parse(json.contents);
-        parseTimedText(data);
-        return;
+      if (track?.baseUrl) {
+        const captionUrl = track.baseUrl + '&fmt=json3';
+        const isAsr = track.kind === 'asr';
+
+        // ── 단계 2: 실제 자막 데이터 가져오기 ──
+        for (const proxyFn of PROXIES) {
+          try {
+            const text = await fetchViaProxy(captionUrl, proxyFn);
+            const data = JSON.parse(text);
+            parseTimedText(data, isAsr);
+            return; // ✅ 성공
+          } catch (e) {
+            console.warn('자막 데이터 가져오기 실패:', e.message);
+          }
+        }
       }
-    } catch (e) {
-      console.log('프록시도 실패:', e);
     }
 
-    // 방법 3: 자동 생성 자막 시도 (lang=en&kind=asr)
-    const asrUrl =
-      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&kind=asr&fmt=json3`;
-    const proxyAsr =
-      `https://api.allorigins.win/get?url=${encodeURIComponent(asrUrl)}`;
+    // ── 폴백: 파라미터 없는 timedtext URL 직접 시도 ──
+    const fallbackUrls = [
+      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3`,
+      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&kind=asr&fmt=json3`,
+    ];
 
-    try {
-      const res = await fetch(proxyAsr);
-      if (res.ok) {
-        const json = await res.json();
-        const data = JSON.parse(json.contents);
-        parseTimedText(data, true);
-        return;
+    for (const url of fallbackUrls) {
+      for (const proxyFn of PROXIES) {
+        try {
+          const text = await fetchViaProxy(url, proxyFn);
+          const data = JSON.parse(text);
+          if (data?.events?.length > 0) {
+            parseTimedText(data, url.includes('kind=asr'));
+            return; // ✅ 성공
+          }
+        } catch { /* 계속 시도 */ }
       }
-    } catch (e) {
-      console.log('ASR 자막도 실패:', e);
     }
 
-    // 모두 실패 → 안내 메시지
+    // ── 모두 실패 ──
     document.getElementById('subtitle-list').innerHTML = `
       <div class="empty-msg">
-        ⚠️ 자막을 자동으로 가져오지 못했어요.<br>
+        ⚠️ 자막을 자동으로 가져오지 못했어요.<br><br>
         아래 <strong>"📂 .srt 파일 직접 올리기"</strong>를 이용해보세요.<br><br>
         <small style="color:#666">
-          YouTube에서 자막 다운로드:<br>
-          영상 아래 ··· → 자막 저장
+          YouTube에서 자막 다운로드 방법:<br>
+          영상 페이지 → ··· 더보기 → 자막 열기 → 다운로드
         </small>
       </div>`;
     setSubtitleStatus('자막 없음');
